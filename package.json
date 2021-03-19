@@ -1,0 +1,25 @@
+{
+  "name": "leaflet-experiment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "body-parser": "*",
+    "express": "*",
+    "pg": "*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ma1069/leaflet-experiment.git"
+  },
+  "author": "Matteo Avalle",
+  "license": "AGPL-3.0-or-later",
+  "bugs": {
+    "url": "https://github.com/ma1069/leaflet-experiment/issues"
+  },
+  "homepage": "https://ma1069.github.io/leaflet-experiment/"
+}
