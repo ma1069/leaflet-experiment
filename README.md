@@ -37,7 +37,7 @@ Per poter fruire i dati ci si prepone di utilizzare un'interfaccia web in grado 
 
 # Implementazione 
 
-## Acquisiione dei dati
+## Acquisizione dei dati
 
 TBD - Soluzione Arduino preesistente ancora da reperire
 
