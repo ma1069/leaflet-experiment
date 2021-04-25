@@ -1,4 +1,4 @@
-# Progetto InquIno
+# Progetto Ambiente
 
 Il progetto si propone di realizzare un sistema open per la condivisione di dati geolocalizzati relativi all'inquinamento ambientale.
 
