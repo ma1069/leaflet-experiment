@@ -59,3 +59,4 @@ TBD - Al momento dovrebbe essere sufficiente una pagina statica HTML, che aggior
 - Adozione di shield LoRa per trasmettere i valori dei sensori a distanza, riducendo la necessita' di connettivita' internet tramite reti wifi
 - Aggiunta di funzioni di storage per permettere la trasmissione dei valori su reti intermittenti senza perdita di informazioni storiche
 - Potenziamento del server di stoccaggio tramite motori di database scalabili (e.g. sistemi open NoSQL)
+- Aggiunta di un'interfaccia web protetta da autenticazione per l'aggiunta di metadati ai vari flussi di informazioni (e.g. aggiungere i dati della scuola che sta trasmettendo i valori dell'inquinamento, geolocalizzarla etc. direttamente da web)
