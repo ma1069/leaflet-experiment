@@ -44,46 +44,76 @@
   <body>
     <h1>Marker interattivi su openstreetmap</h1>
 
-    <div id="map"> Loading... </div>
+	<div id="map"> Loading... </div>
+	
+
+	<script style='text/javascript'>
+		window.net = (function() {
+			let url_fetch = 'demo/data/last';
+
+			async function getPoints() {
+				const response = await fetch(url_fetch);
+				const resp = await response.json();
+
+				return resp;
+			}
+
+			return {
+				fetch: getPoints
+			}
+		})();
+	</script>
+
 
     <script type='text/javascript'>
-    	var markers = [
-		  {
-		    "name":"PuntoUno",
-		    "lat": 45.467,
-		    "lng": 7.876,
-		    "url": "https://www.google.com",
-		    "PMI": 15.2
-		  },{
-		    "name":"PuntoDue",
-		    "address": "Piazza Ottinetti, Torino",
-		    "url": "https://www.github.com",
-		    "PMI": 12.2
-		  },{
-		    "name":"PuntoTre",
-		    "address": "via Torino 132, Ivrea",
-		    "url": "https://www.libero.it",
-		    "PMI": 8.2
-		  },{
-		    "name":"PuntoQuattro",
-		    "address": "Porta Vercelli, Ivrea",
-		    "url": "https://www.libero.it",
-		    "PMI": 8.2
-		  },{
-		    "name":"PuntoCinque",
-		    "address": "Borghetto, Ivrea",
-		    "url": "https://www.libero.it",
-		    "PMI": 8.2
-		  }
-  		];
-    </script>
-    <script type='text/javascript'>
 
+		(async function main() {
+			var markers = await window.net.fetch();
+
+			var map = L.map( 'map', {
+				center: [ 45.467, 7.876],
+				minZoom: 2,
+				zoom: 15
+			});
+
+			L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+				subdomains: ['a','b','c']
+			}).addTo( map );
+
+			var markerClusters = L.markerClusterGroup();
+
+			//for ( var i = 0; i < markers.length; ++i )
+			markers.devices.forEach(function(marker) {
+				var popup = 
+					'<h2 style="margin-bottom:0">' + marker.meta.nome + '</h2>' +
+					'<br/><b>PM2:</b> ' + marker.values.pm2 +
+					'<br/><b>PM10:</b> ' + marker.values.pm10 +
+					'<br/><b>Descrizione:</b> ' + marker.meta.desc + '</a>' +
+					'';
+
+				var m = L.marker( [marker.meta.lat, marker.meta.lon] ) //, {icon: myIcon}
+					.bindPopup( popup );
+
+				markerClusters.addLayer( m );
+			})
+
+			map.addLayer( markerClusters );
+
+		})();
+
+
+
+
+
+
+		/*
     	//==================== The code starts here ==============================
 		(async function main() {
+			var markers = await window.net.fetch();
 			var map = [];
 		    for (const e of markers) {
-		    	if (e.address == null) {
+		    	if (e.meta.address == null) {
 		    		map.push(e);
 		    	} else {
 			    	const x = await addr2lat(e);
@@ -122,15 +152,15 @@
 			}).addTo( map );
 
 			
-			/*
-			var myIcon = L.icon({
-			  iconUrl: myURL + 'images/pin24.png',
-			  iconRetinaUrl: myURL + 'images/pin48.png',
-			  iconSize: [29, 24],
-			  iconAnchor: [9, 21],
-			  popupAnchor: [0, -14]
-			}); 
-			*/
+			
+			//var myIcon = L.icon({
+			//  iconUrl: myURL + 'images/pin24.png',
+			//  iconRetinaUrl: myURL + 'images/pin48.png',
+			//  iconSize: [29, 24],
+			//  iconAnchor: [9, 21],
+			//  popupAnchor: [0, -14]
+			//}); 
+			
 
 			var markerClusters = L.markerClusterGroup();
 
@@ -141,7 +171,7 @@
 			              '<br/><b>Sede:</b> <a href="' + markers[i].url + '" target="_blank">' + markers[i].url + '</a>' +
 			              '';
 
-			  var m = L.marker( [markers[i].lat, markers[i].lng] /*, {icon: myIcon}*/ )
+			  var m = L.marker( [markers[i].lat, markers[i].lng] ) //, {icon: myIcon}
 			                  .bindPopup( popup );
 
 			  markerClusters.addLayer( m );
@@ -149,7 +179,41 @@
 
 			map.addLayer( markerClusters );
     	}
+		*/
 
+	</script>
+	
+	
+	<script type='text/javascript'>
+    	var markers = [
+		  {
+		    "name":"PuntoUno",
+		    "lat": 45.467,
+		    "lng": 7.876,
+		    "url": "https://www.google.com",
+		    "PMI": 15.2
+		  },{
+		    "name":"PuntoDue",
+		    "address": "Piazza Ottinetti, Torino",
+		    "url": "https://www.github.com",
+		    "PMI": 12.2
+		  },{
+		    "name":"PuntoTre",
+		    "address": "via Torino 132, Ivrea",
+		    "url": "https://www.libero.it",
+		    "PMI": 8.2
+		  },{
+		    "name":"PuntoQuattro",
+		    "address": "Porta Vercelli, Ivrea",
+		    "url": "https://www.libero.it",
+		    "PMI": 8.2
+		  },{
+		    "name":"PuntoCinque",
+		    "address": "Borghetto, Ivrea",
+		    "url": "https://www.libero.it",
+		    "PMI": 8.2
+		  }
+  		];
     </script>
   </body>
 </html>
