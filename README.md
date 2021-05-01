@@ -39,7 +39,7 @@ Per poter fruire i dati ci si prepone di utilizzare un'interfaccia web in grado 
 
 ## Acquisizione dei dati
 
-TBD - Soluzione Arduino preesistente ancora da reperire
+Nella cartella <<device>> e' presente il codice da caricare sul device per l'acquisizione
 
 ## Trasmissione dei dati 
 
@@ -47,11 +47,151 @@ TBD - Libreria Arduino da scrivere per il modulo ESP
 
 ## Stoccaggio e trattamento dei dati
 
-TBD - Set di endpoint Python Flask in grado di salvare i dati su di un database SQLite
+Sotto <<server>> e' presente il progetto Python Flask che implementa i seguenti endpoints:
+
+### Data upload
+
+  Endpoint utilizzato dal device per inviare i dati rilevati dai propri sensori.
+  La strategia di questo endpoint consiste nell'inserire direttamente in url l'identificativo del dispositivo, in modo che anche direttamente dai log delle chiamate sia possibile distinguere i vari dispositivi, mentre come parametro PUT va inserita la stringa con tutti i valori dei sensori. Il formato di questa stringa non e' ancora definitivo.
+
+  * **URL:** 
+    /v0/data
+  * **Method:**
+
+    `PUT`
+
+  * **URL Params:** 
+
+    **Required**
+    `device=[alphanumeric]`
+
+  * **Data Params (URL encoded)**
+
+    **Required**
+    `values=[alphanumeric]`
+
+  * **Success Response:**
+
+    * **Code:** 200 <br />
+      **Content:** `{ status: 'ok' }`
+
+  * **Error Response:**
+
+    * **Code:** 400 <br />
+      **Content:** `{ status: 'fail', reason: 'Invalid values' }`    
+    
+  * **Sample Call:**
+
+    ```
+    import requests
+    r = requests.put('https://your_url_here/v0/data?device=A001', { 'values': 'P25:1929.3P10:992' })
+    ```
+
+### Data fetch (latest)
+
+  Endpoint utilizzato dal web client per ottenere l'ultimo valore inviato dai vari dispositivi
+
+  * **URL:** 
+    /v0/data/last
+  * **Method:**
+
+    `GET`
+
+  * **Success Response:**
+
+    * **Code:** 200 <br />
+      **Content:** 
+   
+    ``` 
+    { 
+      status: 'ok',
+      devices: [
+        {
+          id: 'A001',
+          meta: {
+             nome: 'I.I.S. G.Cena',
+             desc: 'Descrizione <b>generica</b>',
+             lat: '12.934897N',
+             lon: '82.234242S',
+          }
+          values: {
+            pm2: '1.2',
+            pm10: '293',
+            ...
+          }
+        },
+        ...
+      ]
+    }
+    ```
+    
+  * **Notes:**
+
+    Tutto l'oggetto "meta" puo' essere vuoto, se il dispositivo non e' ancora stato geolocalizzato
+
+### Aggiornamento metadati
+
+  Endpoint utilizzato dal client web per associate metadati ad un dispositivo.
+  Tutti i parametri sono opzionali, in modo che questa API possa essere richiamata per aggiornare anche solo un valore.
+
+  * **URL:** 
+    /v0/device
+  * **Method:**
+
+    `POST`
+
+  * **URL Params:** 
+
+    **Required**
+    `id=[alphanumeric]`
+
+  * **Data Params (URL encoded)**
+
+    **Optional**
+    `nome=[alphanumeric]`
+    `desc=[alphanumeric]`
+    `lat=[numeric]`
+    `lon=[numeric]`
+
+  * **Success Response:**
+
+    * **Code:** 200 <br />
+      **Content:** `{ status: 'ok' }`
+
+  * **Error Response:**
+
+    * **Code:** 400 <br />
+      **Content:** `{ status: 'fail', reason: 'Invalid values' }`    
+    
+  * **Sample Call:**
+
+    ```
+    import requests
+    r = requests.post('https://your_url_here/v0/device?id=A001', { nome='I.I.S. G.Cena', desc='nuova descrizione' })
+    ```
+
+### Ping
+
+  Endpoint utilizzato dai dispositivi per testare la connessione
+
+  * **URL:** 
+    /v0/ping
+  * **Method:**
+
+    `GET`
+
+  * **Success Response:**
+
+    * **Code:** 200 <br />
+      **Content:** 
+      `{ status: 'ok', message: 'pong' }`
+
+
+Tutti i dati sono memorizzati su di un db MySQL, la cui struttura e' ancora in via di definizione.
 
 ## Fruizione dei dati (WEB)
 
-TBD - Al momento dovrebbe essere sufficiente una pagina statica HTML, che aggiorna una mappa OpenStreetMap tramite del codice JavaScript
+Sotto <<web>> e' presente il web client statico in grado di comunicare con il server e di mostrare i dati geolocalizzati tramite OpenStreetMap
 
 # Nice to have per il futuro
 
