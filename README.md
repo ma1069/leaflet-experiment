@@ -39,7 +39,7 @@ Per poter fruire i dati ci si prepone di utilizzare un'interfaccia web in grado 
 
 ## Acquisizione dei dati
 
-Nella cartella <<device>> e' presente il codice da caricare sul device per l'acquisizione
+Nella cartella <_device_> e' presente il codice da caricare sul device per l'acquisizione
 
 ## Trasmissione dei dati 
 
@@ -47,7 +47,7 @@ TBD - Libreria Arduino da scrivere per il modulo ESP
 
 ## Stoccaggio e trattamento dei dati
 
-Sotto <<server>> e' presente il progetto Python Flask che implementa i seguenti endpoints:
+Sotto <_server_> e' presente il progetto Python Flask che implementa i seguenti endpoints:
 
 ### Data upload
 
@@ -103,25 +103,24 @@ Sotto <<server>> e' presente il progetto Python Flask che implementa i seguenti 
       **Content:** 
    
     ``` 
-    { 
-      status: 'ok',
-      devices: [
-        {
-          id: 'A001',
-          meta: {
-             nome: 'I.I.S. G.Cena',
-             desc: 'Descrizione <b>generica</b>',
-             lat: '12.934897N',
-             lon: '82.234242S',
-          }
-          values: {
-            pm2: '1.2',
-            pm10: '293',
-            ...
-          }
-        },
-        ...
-      ]
+    {
+	"status": "ok",
+	"devices": [
+	{
+		"id": "A001",
+		"meta": {
+			"nome": "I.I.S. G.Cena",
+			"desc": "Descrizione <b>generica</b>",
+			"lat": 45.467,
+			"lon": 7.876
+		},
+		"values": {
+			"pm2": 15.2,
+			"pm10": 92.2
+		}
+	},
+	...
+	]
     }
     ```
     
@@ -191,7 +190,7 @@ Tutti i dati sono memorizzati su di un db MySQL, la cui struttura e' ancora in v
 
 ## Fruizione dei dati (WEB)
 
-Sotto <<web>> e' presente il web client statico in grado di comunicare con il server e di mostrare i dati geolocalizzati tramite OpenStreetMap
+Sotto <_web_> e' presente il web client statico in grado di comunicare con il server e di mostrare i dati geolocalizzati tramite OpenStreetMap
 
 # Nice to have per il futuro
 
