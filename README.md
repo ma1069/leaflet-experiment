@@ -103,24 +103,23 @@ Sotto <_server_> e' presente il progetto Python Flask che implementa i seguenti 
       **Content:** 
    
     ``` 
-    { 
-      status: 'ok',
-      devices: [
-        {
-          id: 'A001',
-          meta: {
-             nome: 'I.I.S. G.Cena',
-             desc: 'Descrizione <b>generica</b>',
-             lat: '12.934897N',
-             lon: '82.234242S',
-          }
-          values: {
-            pm2: '1.2',
-            pm10: '293',
-            ...
-          }
-        },
-        ...
+    {
+     	"status": "ok",
+	     "devices": [
+      {
+		      "id": "A001",
+		      "meta": {
+			       "nome": "I.I.S. G.Cena",
+			       "desc": "Descrizione <b>generica</b>",
+			       "lat": 45.467,
+			       "lon": 7.876
+		      },
+		      "values": {
+			       "pm2": 15.2,
+			       "pm10": 92.2
+		      }
+	     },
+      ...
       ]
     }
     ```
