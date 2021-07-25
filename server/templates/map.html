@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Progetto Ambiente</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css" />
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <style>
+        div#map {
+            height: 70vh;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid mt-4 mb-4">
+        <div class="jumbotron jumbotron-fluid">
+            <div class="container">
+                <h1 class="display-4">Progetto Ambiente</h1>
+                <p class="lead">Lorem ipsum dolor sit amet, consectetur adipisci elit, sed do eiusmod tempor incidunt ut labore et dolore magna aliqua.</p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div id="map"> Loading... </div>
+            </div>
+        </div>
+    </div>
+
+    <script type='text/javascript'>
+        var markers = [
+	{% for device_id, m in measures.items() %}
+            {
+	        "device": "{{ device_id }}",
+		"date_time": "{{ m['date_time'] }}",
+                "name": "{{ m['name'] }}",
+		"description": "{{ m['description'] }}",
+                "lat": {{ m['lat'] }},
+                "lng": {{ m['lng'] }},
+                "last_measures": [ {% for i in m['last_measures'] %}{ 'parameter': '{{ i['parameter'] }}', 'description': '{{ i['description'] }}', 'value': {{ i['value'] }}, 'unit': '{{ i['unit'] }}' }, {% endfor %} ]
+            },
+	{% endfor %}
+        ];
+    </script>
+    <script type='text/javascript'>
+
+        //==================== The code starts here ==============================
+        (async function main() {
+            var map = [];
+            for (const e of markers) {
+                if (e.address == null) {
+                    map.push(e);
+                } else {
+                    const x = await addr2lat(e);
+                    map.push(x);
+                }
+            }
+            showMap(map);
+        })();
+
+
+        // Async function that turns textual addresses into latitude and longitude
+        async function addr2lat(data) { 
+            const response = await fetch('https://nominatim.openstreetmap.org/search?format=json&q=' + encodeURI(data.address));
+            const resp = await response.json();
+                
+            data.lat = resp[0].lat;
+            data.lng = resp[0].lon;
+
+            return data;
+        }
+
+        // Renders the map for real
+        function showMap(markers) {
+
+            // Much of this is from asmaloney example:
+            // http://asmaloney.com/2015/06/code/clustering-markers-on-leaflet-maps
+            var map = L.map( 'map', {
+                center: [ 45.467, 7.876],
+                minZoom: 2,
+                zoom: 15
+            });
+
+            L.tileLayer( 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                subdomains: ['a','b','c']
+            }).addTo( map );
+
+            
+            /*
+            var myIcon = L.icon({
+            iconUrl: myURL + 'images/pin24.png',
+            iconRetinaUrl: myURL + 'images/pin48.png',
+            iconSize: [29, 24],
+            iconAnchor: [9, 21],
+            popupAnchor: [0, -14]
+            }); 
+            */
+
+            var markerClusters = L.markerClusterGroup();
+
+            for ( var i = 0; i < markers.length; ++i )
+            {
+                var popup = '<h5 style="margin-bottom:0">' + markers[i].name + '</h5>' +
+                            '<p><em>' + markers[i].description + '</en></p>' +
+                            '<p><b>Centralina:</b> ' + markers[i].device + '<br/>' +
+                            '<b>Data/ora:</b> ' + markers[i].date_time + '<br/>' +
+                            '<table class="table"><tr><th>Parametro</th><th>Descrizione</th><th>Valore</th><th>Unità</th></tr>';
+                for ( var j = 0; j < markers[i].last_measures.length; ++j )
+		    popup += '<tr><td>' + markers[i].last_measures[j].parameter + '</td><td>' + markers[i].last_measures[j].description + '</td><td>' + markers[i].last_measures[j].value + '</td><td>' + markers[i].last_measures[j].unit + '</td></tr>';
+                popup += '</table></p>';
+		
+                var m = L.marker( [markers[i].lat, markers[i].lng] /*, {icon: myIcon}*/ )
+                                .bindPopup( popup );
+
+                markerClusters.addLayer( m );
+            }
+
+            map.addLayer( markerClusters );
+        }
+
+    </script>
+</body>
+</html>
