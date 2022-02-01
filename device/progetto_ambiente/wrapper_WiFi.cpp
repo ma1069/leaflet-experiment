@@ -37,7 +37,7 @@ void wifiWrapper::connectESP(char ssid[20], char password[20] ){
   //Serial.print(ssid);
   //Serial.print(password);
 
-  Serial.begin(115200);
+  //Serial.begin(115200);
   Serial1.begin(115200);
   delay(3000);
   Serial.println("start");
@@ -185,7 +185,7 @@ void wifiWrapper::httpPUT(char server[50], unsigned long value){
     client.println("Accept: */*");
     client.println("Content-Type: application/x-www-form-urlencoded");
     client.print("Content-Length: ");
-    client.println(payload.length());
+    client.println(String(payload.length()));
     client.println();
     client.print(payload);
   }
@@ -197,7 +197,7 @@ void wifiWrapper::apiCallHTTPpost(String payload, char server[50], char* type, c
   Serial.println();
   Serial.println("Starting connection to server...");
   // if you get a connection, report back via serial
-  if (client.connectSSL(server, 443)) {
+  if (client.connect(server, 80)) {
     Serial.println("Connected to server");
     // Make a HTTP request
     client.println(String(type) + " " + endpoint + " HTTP/1.1");
@@ -205,7 +205,7 @@ void wifiWrapper::apiCallHTTPpost(String payload, char server[50], char* type, c
     client.println("Accept: */*");
     client.println("Content-Type: application/x-www-form-urlencoded");
     client.print("Content-Length: ");
-    client.println(payload.length());
+    client.println(String(payload.length()));
     client.println();
     client.print(payload);
   }
@@ -220,12 +220,14 @@ void wifiWrapper::apiCallHTTPSpost(String payload, char server[50], char* type, 
   if (client.connectSSL(server, 443)) {
     Serial.println("Connected to server");
     // Make a HTTP request
-    client.println(String(type) + " " + endpoint + " HTTP/1.1");
+    client.println(String(type) + " " + endpoint + " HTTP/1.1");Serial.println(String(type) + " " + endpoint + " HTTP/1.1");
     client.println(String("Host: ") + server);
     client.println("Accept: */*");
     client.println("Content-Type: application/x-www-form-urlencoded");
+    //client.println("Content-Type: application/json");
+    client.println("Connection: keep-alive");
     client.print("Content-Length: ");
-    client.println(payload.length());
+    client.println(String(payload.length()));
     client.println();
     client.print(payload);
   }
